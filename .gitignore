@@ -1,0 +1,41 @@
+# Virtual environment
+.venv/
+env/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
+*.bak
+*.swo
+
+# Database files (if using SQLite)
+*.db
+*.sqlite3
+
+# Log files
+*.log
+
+# Environment variables
+.env
+
+# Test reports
+.pytest_cache/
+.coverage
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Jupyter notebooks (if applicable)
+.ipynb_checkpoints/
+
+# Operating System generated files
+.DS_Store
+Thumbs.db
