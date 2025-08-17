@@ -261,6 +261,20 @@ async def verify_user_discord(
         "discord_user_id": discord_user_id
     }
 
+@router.delete("/all")
+async def delete_all_users(
+    db: Session = Depends(get_db),
+    api_key: str = api_key_dependency
+):
+    """Delete all users from the database"""
+    try:
+        db.query(User).delete()
+        db.commit()
+        return {"message": "All users deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error deleting users: {str(e)}")
+
 @router.delete("/{user_id}")
 async def delete_user(
     user_id: int,
@@ -275,18 +289,4 @@ async def delete_user(
     db.delete(user)
     db.commit()
     
-    return {"message": "User deleted successfully"}
-
-@router.delete("/all")
-async def delete_all_users(
-    db: Session = Depends(get_db),
-    api_key: str = api_key_dependency
-):
-    """Delete all users from the database"""
-    try:
-        db.query(User).delete()
-        db.commit()
-        return {"message": "All users deleted successfully"}
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error deleting users: {str(e)}") 
+    return {"message": "User deleted successfully"} 
