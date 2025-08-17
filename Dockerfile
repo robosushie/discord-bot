@@ -9,17 +9,15 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency files
+# Copy dependency files AND source code first
 COPY pyproject.toml poetry.lock README.md ./
+COPY src/ ./src/
+COPY app.py ./
 
 # Install Poetry and dependencies (including Discord bot dependencies)
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
     poetry install --only main --no-interaction --no-ansi
-
-# Copy source code
-COPY src/ ./src/
-COPY app.py ./
 
 # Create non-root user
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
