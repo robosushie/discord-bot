@@ -45,7 +45,7 @@ def send_verification_email(email: str, name: str, token: str) -> bool:
         """
         
         message = Mail(
-            from_email=os.getenv("SENDGRID_FROM_EMAIL"),
+            from_email=(os.getenv("SENDGRID_FROM_EMAIL"), "Team Dreate"),
             to_emails=email,
             subject=subject,
             html_content=html_content
