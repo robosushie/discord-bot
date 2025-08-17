@@ -19,7 +19,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="User Invitation System + Discord Bot", version="1.0.0")
 
 # Add CORS middleware
-app.middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
