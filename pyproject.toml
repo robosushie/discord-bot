@@ -1,10 +1,8 @@
 [tool.poetry]
 name = "discord-bot"
 version = "0.1.0"
-description = "Discord Verificaiton Backend"
-authors = [
-    "Sushant S Samuel <sushant@dreate.ai>",
-]
+description = "User Invitation System Backend API + Discord Bot"
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 packages = [
     {include = "src"}
@@ -13,8 +11,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.116.1"
-uvicorn = "^0.35.0"
-streamlit = "^1.48.1"
+uvicorn = {extras = ["standard"], version = "^0.35.0"}
 psycopg2-binary = "^2.9.10"
 sqlalchemy = "^2.0.43"
 pandas = "^2.3.1"
@@ -23,10 +20,10 @@ sendgrid = "^6.12.4"
 python-dotenv = "^1.1.1"
 pydantic = "^2.11.7"
 alembic = "^1.16.4"
-requests = "^2.32.4"
-
-
+"discord.py" = "^2.3.2"
+aiohttp = "^3.9.1"
+discord = "^2.3.2"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

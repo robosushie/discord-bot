@@ -27,9 +27,19 @@ class UserVerification(BaseModel):
     email: str
     token: str
 
+class DiscordVerification(BaseModel):
+    email: str
+    token: str
+    discord_user_id: str
+
 class VerificationResponse(BaseModel):
     success: bool
     message: str
+
+class DiscordVerificationResponse(BaseModel):
+    success: bool
+    message: str
+    discord_user_id: Optional[str] = None
 
 class CSVUploadResponse(BaseModel):
     total_processed: int

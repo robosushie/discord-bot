@@ -5,30 +5,32 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    libpq-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy README.md first (Poetry needs this)
-COPY README.md ./
-
-# Copy requirements and install Python dependencies
+# Copy dependency files
 COPY pyproject.toml poetry.lock ./
+
+# Install Poetry and dependencies
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --only main --no-interaction --no-ansi --no-root
+    poetry install --only main --no-dev --no-interaction --no-ansi --no-root
 
-# Copy application code
-COPY . .
+# Copy source code
+COPY src/ ./src/
+COPY app.py ./
 
 # Create non-root user
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Expose port (Azure Web App will use this)
+# Expose port
 EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Start the FastAPI app (Azure Web App will handle the startup)
+# Start both FastAPI and Discord bot
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"] 

@@ -1,24 +1,25 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import streamlit.web.bootstrap as bootstrap
-import streamlit as st
-import subprocess
-import sys
-import os
-from pathlib import Path
+import asyncio
 import threading
-import time
-import webbrowser
+import os
+from dotenv import load_dotenv
 
-# Import the FastAPI app
-from src.app.app import app as fastapi_app
+from src.models.database import engine
+from src.models.user import Base
+from src.app.routes import users
+from src.discord_bot.bot import start_discord_bot
 
-# Create the main app
-app = FastAPI(title="User Invitation System", version="1.0.0")
+# Load environment variables
+load_dotenv()
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="User Invitation System + Discord Bot", version="1.0.0")
 
 # Add CORS middleware
-app.add_middleware(
+app.middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -26,106 +27,48 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount the FastAPI app at /api
-app.mount("/api", fastapi_app)
-
-# Streamlit app directory
-STREAMLIT_APP_DIR = Path(__file__).parent / "src" / "app" / "dashboard"
-STREAMLIT_PORT = 8501
-
-# Global variable to track if Streamlit is running
-streamlit_process = None
-
-def start_streamlit():
-    """Start Streamlit in a separate thread"""
-    global streamlit_process
-    
-    try:
-        # Change to Streamlit app directory
-        os.chdir(STREAMLIT_APP_DIR)
-        
-        # Start Streamlit process
-        streamlit_process = subprocess.Popen([
-            sys.executable, "-m", "streamlit", "run", "main.py",
-            "--server.port", str(STREAMLIT_PORT),
-            "--server.address", "localhost",
-            "--server.headless", "true",
-            "--browser.gatherUsageStats", "false",
-            "--server.runOnSave", "false"
-        ])
-        
-        print(f"✅ Streamlit started on port {STREAMLIT_PORT}")
-        
-    except Exception as e:
-        print(f"❌ Error starting Streamlit: {e}")
-
-def start_streamlit_background():
-    """Start Streamlit in background thread"""
-    thread = threading.Thread(target=start_streamlit, daemon=True)
-    thread.start()
-    
-    # Wait a bit for Streamlit to start
-    time.sleep(3)
-    
-    # Open dashboard in browser
-    try:
-        webbrowser.open(f"http://localhost:{STREAMLIT_PORT}")
-    except:
-        pass
+# Include routers
+app.include_router(users.router, prefix="/api")
 
 @app.on_event("startup")
 async def startup_event():
-    """Start Streamlit when FastAPI starts"""
-    start_streamlit_background()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Stop Streamlit when FastAPI stops"""
-    global streamlit_process
-    if streamlit_process:
-        streamlit_process.terminate()
-        print("✅ Streamlit stopped")
+    """Start Discord bot in background thread"""
+    def run_bot():
+        asyncio.run(start_discord_bot())
+    
+    # Start Discord bot in background thread
+    bot_thread = threading.Thread(target=run_bot, daemon=True)
+    bot_thread.start()
 
 @app.get("/")
 async def root():
     return {
-        "message": "User Invitation System",
+        "message": "User Invitation System + Discord Bot API",
+        "description": "Backend API for managing user invitations and Discord bot verification",
         "endpoints": {
             "api": "/api",
-            "dashboard": f"/dashboard (http://localhost:{STREAMLIT_PORT})",
-            "api_docs": "/api/docs"
-        }
+            "api_docs": "/api/docs",
+            "health": "/health"
+        },
+        "discord_bot": "Running in background"
     }
-
-@app.get("/dashboard")
-async def dashboard_root():
-    """Redirect to Streamlit dashboard"""
-    return RedirectResponse(url=f"http://localhost:{STREAMLIT_PORT}")
-
-@app.get("/dashboard/{path:path}")
-async def dashboard_path(path: str):
-    """Redirect to Streamlit dashboard with path"""
-    return RedirectResponse(url=f"http://localhost:{STREAMLIT_PORT}")
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    global streamlit_process
-    
-    streamlit_status = "running" if streamlit_process and streamlit_process.poll() is None else "stopped"
-    
     return {
         "status": "healthy",
-        "fastapi": "running",
-        "streamlit": streamlit_status,
-        "streamlit_port": STREAMLIT_PORT
+        "service": "User Invitation System + Discord Bot API",
+        "deployment": "azure-vm",
+        "message": "Backend API and Discord bot are running successfully"
     }
 
 if __name__ == "__main__":
     import uvicorn
-    print("🚀 Starting User Invitation System...")
-    print(f"📊 Dashboard will be available at: http://localhost:{STREAMLIT_PORT}")
+    print("🚀 Starting User Invitation System + Discord Bot...")
     print("🔌 API will be available at: http://localhost:8000")
+    print("📚 API Documentation at: http://localhost:8000/api/docs")
+    print("🤖 Discord bot will start automatically...")
     
     uvicorn.run(
         app, 
