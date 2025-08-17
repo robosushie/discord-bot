@@ -12,10 +12,10 @@ RUN apt-get update && apt-get install -y \
 # Copy dependency files
 COPY pyproject.toml poetry.lock ./
 
-# Install Poetry and dependencies
+# Install Poetry and dependencies (including Discord bot dependencies)
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --only main --no-dev --no-interaction --no-ansi --no-root
+    poetry install --only main --no-interaction --no-ansi
 
 # Copy source code
 COPY src/ ./src/
@@ -32,5 +32,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Start both FastAPI and Discord bot
+# Start the unified app (FastAPI + Discord bot)
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"] 
