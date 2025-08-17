@@ -95,25 +95,29 @@ async def upload_csv(
 
 @router.post("/send-emails", response_model=EmailSendResponse)
 async def send_verification_emails(
+    user_ids: List[int],  # Accept specific user IDs
     db: Session = Depends(get_db),
     api_key: str = api_key_dependency
 ):
-    """Send verification emails to all unverified users"""
+    """Send verification emails to specific users"""
     try:
-        # Get all unverified users
-        unverified_users = db.query(User).filter(User.is_verified == False).all()
+        # Get only the specified users who are unverified
+        users = db.query(User).filter(
+            User.id.in_(user_ids),
+            User.is_verified == False
+        ).all()
         
-        if not unverified_users:
+        if not users:
             return EmailSendResponse(
                 success=True,
-                message="No unverified users found",
+                message="No unverified users found with the specified IDs",
                 emails_sent=0
             )
         
         emails_sent = 0
         failed_emails = []
         
-        for user in unverified_users:
+        for user in users:
             if send_verification_email(user.email, user.name, user.token):
                 emails_sent += 1
             else:
