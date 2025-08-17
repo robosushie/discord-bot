@@ -34,7 +34,7 @@ def send_verification_email(email: str, name: str, token: str) -> bool:
         <body>
             <h2>Welcome {name}!</h2>
             <p>We're excited to finally give you access to our exclusive Discord community. Please use the following verification code to complete your registration:</p>
-            <p>Invitation link to the Discord server: <a href="https://discord.gg/NhMXVQajV4">https://discord.gg/NhMXVQajV4</a></p>
+            <p>Invitation link to the Discord server: <a href="https://discord.gg/zCq5UEfqNm">https://discord.gg/zCq5UEfqNm</a></p>
             <h1 style="color: #007bff; font-size: 2em; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 5px;">{token}</h1>
             <p>This code will expire in {os.getenv('TOKEN_EXPIRY_DAYS', 7)} days.</p>
             <p>If you didn't request this, please ignore this email.</p>
