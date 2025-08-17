@@ -15,8 +15,8 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 API_ENDPOINT = os.getenv('API_ENDPOINT', 'http://localhost:8000/api/verify-discord')
 API_KEY = os.getenv('SECRET_KEY')  # Use the same SECRET_KEY from backend
-MEMBER_ROLE_NAME = os.getenv('MEMBER_ROLE_NAME', 'Member')
-UNVERIFIED_ROLE_NAME = os.getenv('UNVERIFIED_ROLE_NAME', 'Unverified')
+MEMBER_ROLE_NAME = os.getenv('MEMBER_ROLE_NAME', 'member')
+UNVERIFIED_ROLE_NAME = os.getenv('UNVERIFIED_ROLE_NAME', 'unverified')
 VERIFICATION_CHANNEL_NAME = os.getenv('VERIFICATION_CHANNEL_NAME', 'verification')
 VERIFICATION_TIMEOUT = int(os.getenv('VERIFICATION_TIMEOUT', '300'))  # 5 minutes default
 
