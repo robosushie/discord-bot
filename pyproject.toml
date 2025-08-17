@@ -23,6 +23,7 @@ alembic = "^1.16.4"
 "discord.py" = "^2.3.2"
 aiohttp = "^3.9.1"
 discord = "^2.3.2"
+streamlit = "^1.48.1"
 
 [build-system]
 requires = ["poetry-core"]
