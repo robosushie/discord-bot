@@ -7,7 +7,7 @@ class UserBase(BaseModel):
     name: str
     college: str
     branch: str
-    year: int
+    year: str
 
 class UserCreate(UserBase):
     pass

@@ -49,7 +49,7 @@ async def upload_csv(
             name = row['name'].strip()
             college = row['college'].strip()
             branch = row['branch'].strip()
-            year = int(row['year'])
+            year = str(row['year']).strip()  # Changed from int(row['year']) to str(row['year']).strip()
             
             # Check if user already exists
             existing_user = db.query(User).filter(User.email == email).first()
